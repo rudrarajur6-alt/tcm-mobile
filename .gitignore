@@ -1,1 +1,7 @@
-node_modules/\n.expo/\ndist/\n*.apk\n*.ipa\n*.aab
+node_modules/
+.expo/
+dist/
+*.apk
+*.ipa
+*.aab
+.DS_Store
