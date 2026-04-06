@@ -1,0 +1,97 @@
+name: Build Mobile Apps (Android + iOS)
+
+on:
+  push:
+    branches: [master, main]
+    tags: ['mobile-v*']
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Cut a release'
+        required: false
+        default: 'false'
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --clean --no-install
+
+      - name: Build APK
+        working-directory: android
+        run: ./gradlew assembleRelease
+
+      - name: Find and rename APK
+        run: |
+          apk=$(find android -name "*.apk" -path "*/release/*" | head -1)
+          if [ -z "$apk" ]; then echo "No APK found"; exit 1; fi
+          cp "$apk" TheCloudMarket-Workspace.apk
+          ls -lh TheCloudMarket-Workspace.apk
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TheCloudMarket-Workspace-Android
+          path: TheCloudMarket-Workspace.apk
+          retention-days: 30
+
+  release:
+    needs: [build-android]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/mobile-v') || github.event.inputs.release == 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Download Android artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: TheCloudMarket-Workspace-Android
+          path: release/
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/mobile-v* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=mobile-dev-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "TCM Mobile ${{ steps.tag.outputs.tag }}"
+          body: |
+            ## The Cloud Market — Mobile Workspace
+
+            Email, Files, Calendar, Talk in one app for your phone.
+
+            ### Android
+            Download `TheCloudMarket-Workspace.apk`, enable "Install from unknown sources" when prompted, install.
+
+            ### iOS
+            Coming via TestFlight — requires Apple Developer account setup.
+
+            Sign in with your workspace URL and credentials.
+          files: release/TheCloudMarket-Workspace.apk
+          draft: false
+          prerelease: ${{ contains(steps.tag.outputs.tag, 'dev') }}
