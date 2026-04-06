@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "The Cloud Market",
+    "slug": "the-cloud-market",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f1629"
+    },
+    "ios": {
+      "bundleIdentifier": "market.thecloud.workspace",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "package": "market.thecloud.workspace",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f1629"
+      },
+      "permissions": ["INTERNET"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "tcmworkspace",
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}
