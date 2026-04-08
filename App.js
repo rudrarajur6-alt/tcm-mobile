@@ -54,9 +54,9 @@ const MAIL_SYNC_JS = (subdomain, email) => `
 function tabsForCreds(creds) {
   const nc = creds.nc_url.replace(/\/$/, '');
   return [
-    { key: 'email', label: 'Email', icon: '✉', url: nc + '/index.php/apps/mail/' },
     { key: 'files', label: 'Files', icon: '📁', url: nc + '/index.php/apps/files/' },
-    { key: 'calendar', label: 'Calendar', icon: '📅', url: nc + '/index.php/apps/calendar/' },
+    { key: 'photos', label: 'Photos', icon: '📷', url: nc + '/index.php/apps/photos/' },
+    { key: 'email', label: 'Email', icon: '✉', url: nc + '/index.php/apps/mail/' },
     { key: 'talk', label: 'Talk', icon: '💬', url: nc + '/index.php/apps/spreed/' },
     { key: 'more', label: 'More', icon: '⋯', url: nc + '/index.php/apps/dashboard/' },
   ];
@@ -107,9 +107,9 @@ function LoginScreen({ onLogin }) {
       <ScrollView contentContainerStyle={loginStyles.scroll} keyboardShouldPersistTaps="handled">
         <Image source={require('./assets/icon.png')} style={loginStyles.logo} />
         <Text style={loginStyles.title}>The Cloud Market</Text>
-        <Text style={loginStyles.tagline}>Your workspace in the cloud</Text>
+        <Text style={loginStyles.tagline}>Your private cloud</Text>
 
-        <Text style={loginStyles.heading}>Sign in to your workspace</Text>
+        <Text style={loginStyles.heading}>Sign in to your space</Text>
 
         <TextInput
           style={loginStyles.input}
@@ -164,7 +164,7 @@ function LoginScreen({ onLogin }) {
 // ---------- Main App ----------
 export default function App() {
   const [creds, setCreds] = useState(null);
-  const [activeTab, setActiveTab] = useState('email');
+  const [activeTab, setActiveTab] = useState('files');
   const [loading, setLoading] = useState({});
   const [booting, setBooting] = useState(true);
   const webViewRefs = useRef({});
