@@ -79,7 +79,10 @@ function LoginScreen({ onLogin }) {
     }
     setLoading(true);
     setError('');
-    const nc_url = s.startsWith('http') ? s : 'https://' + s;
+    // Smart input: just "cyberollie" → "https://cyberollie.thecloud.market"
+    let normalized = s.replace(/^https?:\/\//, '').split('/')[0];
+    if (!normalized.includes('.')) normalized += '.thecloud.market';
+    const nc_url = 'https://' + normalized;
     const creds = {
       nc_url,
       nc_user: e,
@@ -110,13 +113,13 @@ function LoginScreen({ onLogin }) {
 
         <TextInput
           style={loginStyles.input}
-          placeholder="yourcompany.thecloud.market"
+          placeholder="yourcompany"
           placeholderTextColor="#64748b"
           value={server}
           onChangeText={setServer}
           autoCapitalize="none"
           autoCorrect={false}
-          keyboardType="url"
+          keyboardType="default"
         />
         <TextInput
           style={loginStyles.input}
